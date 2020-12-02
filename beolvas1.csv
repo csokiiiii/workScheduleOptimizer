@@ -1,0 +1,17 @@
+Name;Minimum workdays;Maximum workdays;Knowledge level;;BOLT a;minimum labor number;maximum labor number;expected knowledge level
+Attila;0;3;1;;Monday;2;2;2
+Bela;0;2;2;;Tuesday;1;1;1
+Cecilia;0;2;1;;Wednesday;2;2;2
+Denes;0;2;0;;Thursday;0;0;0
+;;;;;Friday;0;0;0
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;;;;
+;;;;;BOLT b;minimum labor number;maximum labor number;expected knowledge level
+;;;;;Monday;1;1;1
+;;;;;Tuesday;1;1;1
+;;;;;Wednesday;1;1;1
+;;;;;Thursday;0;0;0
+;;;;;Friday;0;0;0
