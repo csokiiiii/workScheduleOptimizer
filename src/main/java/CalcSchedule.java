@@ -13,11 +13,13 @@ public class CalcSchedule {
     double runTime;
     String errorMessage;
     MultiValuedMap<Integer, List<Domain>> solutionMap;
+    MultiValuedMap<Integer, List<Domain>> solutionMap2;
     ArrayList<String> people;
     ArrayList<String> shops;
     ArrayList<String> days;
     int finalCost;
-
+    int finalPayment;
+    double runTimeSec;
 
     private static BooleanVar[] createBooleanVar(BooleanVar[] v2, Store store, String name, ArrayList<String> shops, ArrayList<String> days) {
         for (int i = 0; i < v2.length; i++) {
@@ -53,6 +55,7 @@ public class CalcSchedule {
 
         //Cost
         IntVar[] costs = new IntVar[beosztas.shops.size() * beosztas.numberOfDays * beosztas.numberOfPeople];
+        IntVar[] costs2 = new IntVar[beosztas.shops.size() * beosztas.numberOfDays * beosztas.numberOfPeople];
         //Összesített egy dimenziós array a solution megtalálásához
         BooleanVar[] sumV = new BooleanVar[beosztas.shops.size() * beosztas.numberOfDays * beosztas.numberOfPeople];
         for (int i = 0; i < beosztas.numberOfPeople; i++) {
@@ -61,6 +64,7 @@ public class CalcSchedule {
 
                 //Ide akarom betenni a costokat
                 costs[i * beosztas.numberOfDays * beosztas.shops.size() + j] = new IntVar(store, "c" + (i * beosztas.numberOfDays * beosztas.shops.size() + j), beosztas.tudaszSzint.get(i), beosztas.tudaszSzint.get(i));
+                costs2[i * beosztas.numberOfDays * beosztas.shops.size() + j] = new IntVar(store, "payment" + (i * beosztas.numberOfDays * beosztas.shops.size() + j), beosztas.fizetesIgeny.get(i), beosztas.fizetesIgeny.get(i));
             }
             //preferált napszám megszorítás
             preferaltMegszoritas(store, workdaysAll[i], beosztas.preferredWorkDayNOsMin.get(i), beosztas.preferredWorkDayNOsMax.get(i));
@@ -106,55 +110,66 @@ public class CalcSchedule {
             search.getSolutionListener().recordSolutions(true);
             search.getSolutionListener().searchAll(true);
 
-            //search.getSolutionListener().setSolutionLimit( 3 ); //------------maximum ennyi megoldás
+            search.getSolutionListener().setSolutionLimit( 1000000 ); //------------maximum ennyi megoldás
 
 
             SelectChoicePoint<IntVar> select2 =
                     new SimpleSelect<IntVar>(sumV, new SmallestDomain<>(), new IndomainMin<>());
-            search.setTimeOut(5);
+            search.setTimeOut(20);
             search.setPrintInfo(false);
 
             boolean result2 = search.labeling(store, select2);
             //search.getSolutionListener().printAllSolutions();
-            search.getSolutionListener().getSolutions();
-            System.out.println(" megoldások száma: " + search.getSolutionListener().solutionsNo());
+
+           // System.out.println(" megoldások száma: " + search.getSolutionListener().solutionsNo());
             MultiValuedMap<Integer, List<Domain>> solutionMap = new ArrayListValuedHashMap<>();
+            MultiValuedMap<Integer, List<Domain>> solutionMap2 = new ArrayListValuedHashMap<>();
 
             if (consistency && result2) {
                 int start = 1;
                 Domain[] finalSolution = search.getSolution(start);
                 System.out.println("------------");
-                System.out.println(search.getSolution(start));
+              //  System.out.println(search.getSolution(start));
 
                 List<Domain> solutionInNumber = new ArrayList<>();
                 int finalCost = 0;
+                int finalPayment = 0;
                 for (int i = 0; i < finalSolution.length; i++) {
                     finalCost += Integer.parseInt(String.valueOf(finalSolution[i])) * costs[i].value();
+                    finalPayment += Integer.parseInt(String.valueOf(finalSolution[i])) * costs2[i].value();
                     solutionInNumber.add(finalSolution[i]);
                 }
                 // System.out.println("solnum"+solutionInNumber.toString());
                 solutionMap.put(finalCost, solutionInNumber);
+                solutionMap2.put(finalPayment, solutionInNumber);
 
                 for (int i = start + 1; i <= search.getSolutionListener().solutionsNo(); i++) {
                     Domain[] sol2 = search.getSolution(i);
                     List<Domain> solutionInNumber2 = new ArrayList<>();
                     int cost = 0;
+                    int payment = 0;
                     for (int j = 0; j < sol2.length; j++) {
                         cost += Integer.parseInt(String.valueOf(sol2[j])) * costs[j].value();
+                        payment += Integer.parseInt(String.valueOf(sol2[j])) * costs2[j].value();
                         solutionInNumber2.add(sol2[j]);
-
                     }
-                    //System.out.println("solnum"+solutionInNumber2.toString());
-                    // System.out.println("Cost: " + cost);
+
                     solutionMap.put(cost, solutionInNumber2);
+                    solutionMap2.put(payment, solutionInNumber2);
 
                     if (finalCost <= cost) {
                         finalCost = cost;
+                    }
+
+                    if (finalPayment >= payment) {
+                        finalPayment = payment;
                     }
                 }
                 this.solutionMap = solutionMap;
                 this.finalCost = finalCost;
 
+                this.solutionMap2 = solutionMap2;
+                this.finalPayment = finalPayment;
 
             } else {
 
@@ -166,7 +181,7 @@ public class CalcSchedule {
             throw new noSolutionException("No solution exists, please check your input\n");
         }
         long stopTime = System.nanoTime();
-        double runTimeSec = (double) (stopTime - startTime) / 1000000000;
+        runTimeSec = (double) (stopTime - startTime) / 1000000000;
         System.out.println("runTime in sec: " + (runTimeSec));
         runTime = runTimeSec;
         this.shops = beosztas.shops;

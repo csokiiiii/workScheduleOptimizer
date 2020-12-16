@@ -1,9 +1,10 @@
-Shops2.class
 Beolvas.class
+MyException.class
+noSolutionException.class
+Kiir.class
+MainFX.class
+CalcSchedule.class
+Shops2.class
 Beosztas.class
 Controller.class
 Shops.class
-MyException.class
-noSolutionException.class
-MainFX.class
-CalcSchedule.class

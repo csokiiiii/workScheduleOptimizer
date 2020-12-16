@@ -1,6 +1,6 @@
 
 .root {
-
+      -fx-font-family: "Comic Sans MS";
 }
 
 .scroll-pane > .viewport {
@@ -8,12 +8,10 @@
 }
 
 .scroll-pane {
-          -fx-background: #2f4f4f;
+          -fx-background: rgb(1,240, 2);
           -fx-background-repeat: stretch;
           -fx-background-size: 900 506;
           -fx-background-position: center center;
-
-
 }
 
 .anchor-pane{
@@ -21,23 +19,17 @@
 }
 
 .label {
-    -fx-font-size: 14px;
-    -fx-text-fill: black;
-    -fx-font-family: "Arial Narrow";
+    -fx-font-size: 12px;
+    -fx-font-family: "Comic Sans MS";
     -fx-font-weight: bold;
+    -fx-text-fill: #991B28;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
 }
-
 
 .button {
-
-
+   /* -fx-text-fill: white;*/
+   -fx-font-family: "Comic Sans MS";
     -fx-font-weight: bold;
-     -fx-text-fill: black;
-     -fx-font-family: "Arial Narrow";
-    -fx-background-color: linear-gradient(#61a2b1, #2A5058);
+   -fx-background-color: #CCFF99;
     -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
-}
-
-.radio-button {
-    -fx-text-fill: black;
 }

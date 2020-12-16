@@ -24,6 +24,7 @@ class Beosztas {
     public ArrayList<ArrayList<Integer>> preferredWorkersNOMinX;
     public ArrayList<ArrayList<Integer>> preferredWorkersNOMaxX;
     ArrayList<Integer> tudaszSzint;
+    ArrayList<Integer> fizetesIgeny;
     int maxTudasSzint;
     ArrayList<Integer> elvartTudasszintA;
     ArrayList<Integer> elvartTudasszintB;
@@ -51,6 +52,7 @@ class Beosztas {
                 preferredWorkersNOMaxX = new ArrayList<>(Arrays.asList(preferredWorkersNOMaxA, preferredWorkersNOMaxB));
                 tudaszSzint = new ArrayList<>(Arrays.asList(1, 2, 1, 0)); //------- ezt integernek kell felvenni
                 maxTudasSzint = Collections.max(tudaszSzint);
+                fizetesIgeny=new ArrayList<>(Arrays.asList(100,200,120,80));
                 elvartTudasszintA = new ArrayList<>(Arrays.asList(2, 1, 2));
                 elvartTudasszintB = new ArrayList<>(Arrays.asList(1, 1, 1));
                 elvartTudasSzintX = new ArrayList<>(Arrays.asList(elvartTudasszintA, elvartTudasszintB)); //ezt is vhogy forral kell majd beolvasni
@@ -89,6 +91,7 @@ class Beosztas {
     public Beosztas(int mod, int numberOfShops, int numberOfPeople, int numberOfDays,
                     int prefWorkdayMinMin, int prefWorkdayMinMax, int prefWorkdayMaxMin,
                     int prefWorkdayMaxMax, int knowledgeLevelMin, int knowledgeLevelMax,
+                    int paymentDemandMin, int paymentDemandMax,
                     int prefWorkersMinMin, int prefWorkersMinMax, int prefWorkersMaxMin,
                     int prefWorkersMaxMax,int expectedKnowledgeMin, int expectedKnowledgeMax
                     ) throws IOException {
@@ -97,13 +100,13 @@ class Beosztas {
         people = new ArrayList<>();
         days = new ArrayList<>();
         for(int i=0;i<numberOfShops;i++){
-            shops.add("Shop"+i+1);
+            shops.add(String.valueOf(i+1));
         }
         for(int i=0;i<numberOfPeople;i++){
-            people.add("person"+i);
+            people.add("person"+(i+1));
         }
         for (int i=0;i<numberOfDays;i++){
-            days.add("day"+i);
+            days.add("day"+(i+1));
         }
         this.numberOfDays = numberOfDays;
         this.numberOfPeople = numberOfPeople;
@@ -122,6 +125,7 @@ class Beosztas {
         }
         System.out.println("preferredWorkersNOMaxX size: " + preferredWorkersNOMaxX.size());
         tudaszSzint = randomGenerator(numberOfPeople, knowledgeLevelMin, knowledgeLevelMax); //------- ezt integernek kell felvenni
+        fizetesIgeny = randomGenerator(numberOfPeople,paymentDemandMin,paymentDemandMax);
         maxTudasSzint = Collections.max(tudaszSzint);
         elvartTudasSzintX = new ArrayList<>(shops.size());
         for (int i = 0; i < shops.size(); i++) {
@@ -146,6 +150,7 @@ class Beosztas {
                 preferredWorkersNOMinX = beolvasas.workersNOMin;
                 preferredWorkersNOMaxX = beolvasas.workersNOMax;
                 tudaszSzint = beolvasas.knowledgeLevel;
+                fizetesIgeny = beolvasas.paymentLevel;
                 maxTudasSzint = Collections.max(tudaszSzint);
                 elvartTudasSzintX = beolvasas.expectedKnowledgeLevel;
                 if (people.size() != preferredWorkDayNOsMin.size() || people.size() != preferredWorkDayNOsMax.size()

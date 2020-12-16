@@ -154,22 +154,28 @@ public class Beolvas {
     ArrayList<Integer> PreferredWorkdaysNOMin = new ArrayList<>();
     ArrayList<Integer> PreferredWorkdaysNOMax= new ArrayList<>();
     ArrayList<Integer> knowledgeLevel= new ArrayList<>();
+    ArrayList<Integer> paymentLevel= new ArrayList<>();
     ArrayList<ArrayList<Integer>> workersNOMin= new ArrayList<>();
     ArrayList<ArrayList<Integer>> workersNOMax= new ArrayList<>();
     ArrayList<ArrayList<Integer>> expectedKnowledgeLevel= new ArrayList<>();
 
     public Beolvas(String fileName) throws IOException, MyException {
         this.fileName = fileName;
-        ArrayList<String[]> beAdat = (ArrayList<String[]>) readData(fileName);
-        PreferredWorkdaysNOMin = fillArray(beAdat, PreferredWorkdaysNOMin, "Minimum workdays");
-        PreferredWorkdaysNOMax = fillArray(beAdat, PreferredWorkdaysNOMax, "Maximum workdays");
-        knowledgeLevel = fillArray(beAdat, knowledgeLevel, "Knowledge level");
-        days = fillStringAtRepeatExit(beAdat, days, "Bolt");
-        shops = fillShops(beAdat, shops, "Bolt");
-        people = fillStringAtRepeatExit(beAdat, people, "Name");
-        workersNOMin = fillArrayInArray(beAdat, workersNOMin, "minimum labor number");
-        workersNOMax = fillArrayInArray(beAdat, workersNOMax, "maximum labor number");
-        expectedKnowledgeLevel = fillArrayInArray(beAdat, expectedKnowledgeLevel, "expected knowledge level");
+        if(fileName.substring(fileName.length()-4).contains("csv")) {
+            ArrayList<String[]> beAdat = (ArrayList<String[]>) readData(fileName);
+            PreferredWorkdaysNOMin = fillArray(beAdat, PreferredWorkdaysNOMin, "Minimum workdays");
+            PreferredWorkdaysNOMax = fillArray(beAdat, PreferredWorkdaysNOMax, "Maximum workdays");
+            knowledgeLevel = fillArray(beAdat, knowledgeLevel, "Knowledge level");
+            paymentLevel = fillArray(beAdat, paymentLevel, "Payment demand");
+            days = fillStringAtRepeatExit(beAdat, days, "Bolt");
+            shops = fillShops(beAdat, shops, "Bolt");
+            people = fillStringAtRepeatExit(beAdat, people, "Name");
+            workersNOMin = fillArrayInArray(beAdat, workersNOMin, "minimum labor number");
+            workersNOMax = fillArrayInArray(beAdat, workersNOMax, "maximum labor number");
+            expectedKnowledgeLevel = fillArrayInArray(beAdat, expectedKnowledgeLevel, "expected knowledge level");
+        }else{
+            throw new MyException("File extension is not csv");
+        }
     }
 
 }

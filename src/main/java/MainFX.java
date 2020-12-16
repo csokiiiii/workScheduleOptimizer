@@ -14,16 +14,14 @@ public class MainFX extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-        URL url = getClass().getResource("/View.fxml");
-        System.out.println(url);
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("/View.fxml"));
-        Parent root = FXMLLoader.load(getClass().getResource("/View.fxml"));
-        stage.setTitle("work scheduler");
-        stage.setResizable(false);
-        Scene scene = new Scene(root, 700,500);
-        scene.getStylesheets().addAll(this.getClass().getResource("work.css").toExternalForm());
-        stage.setScene(scene);
-        stage.show();
+
+            Parent root = FXMLLoader.load(getClass().getResource("/View2.fxml"));
+            stage.setTitle("Work scheduler");
+            stage.setResizable(false);
+            Scene scene = new Scene(root, 700, 500);
+            scene.getStylesheets().addAll(this.getClass().getResource("work.css").toExternalForm());
+            stage.setScene(scene);
+            stage.show();
     }
 
     public static void main(String[] args) {

@@ -1,8 +1,6 @@
-import javafx.beans.property.ReadOnlyIntegerWrapper;
-import javafx.beans.property.ReadOnlyListPropertyBase;
-import javafx.beans.property.ReadOnlyListWrapper;
+import com.sun.javafx.tk.FileChooserType;
+import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -12,33 +10,27 @@ import javafx.scene.control.*;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.stage.FileChooser;
-import javafx.util.Callback;
 
-import java.io.File;
-import java.io.IOException;
+
+import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import java.util.ResourceBundle;
-import java.util.concurrent.ScheduledExecutorService;
 
 
 public class Controller<fileName> implements Initializable {
 
-    @FXML
-    private Button test;
+
     @FXML
     private Button openFileButton;
     @FXML
     private Button startButton;
     @FXML
-    private Button startButton11;
-    @FXML
     private Label readFileLabel;
-    @FXML
-    private Label readFileLabel11;
     @FXML
     private RadioButton radioButton1;
     @FXML
@@ -46,47 +38,22 @@ public class Controller<fileName> implements Initializable {
     @FXML
     private Label employeesNOLabel;
     @FXML
-    private Label employeesNOLabel11;
-    @FXML
-    private Label employeesNOLabel1;
-    @FXML
     private Label shopsNOLabel;
-    @FXML
-    private Label shopsNOLabel1;
-    @FXML
-    private Label shopsNOLabel11;
-    @FXML
-    private Label workdaysNOLabel1;
     @FXML
     private Label workdaysNOLabel;
     @FXML
-    private Label workdaysNOLabel11;
-    @FXML
     private Label readWarnLabel;
     @FXML
-    private Label readWarnLabel11;
-    @FXML
     private Pane employeeNOPanel;
-    @FXML
-    private Pane employeeNOPanel1;
-    @FXML
-    private Pane employeeNOPanel11;
     @FXML
     private Pane optimalizationOptionPane;
     @FXML
     private Pane readFileButtonPane;
     @FXML
     private Pane solutionNOPane;
-    @FXML
-    private Pane solutionNOPane1;
-    @FXML
-    private Pane solutionNOPane11;
+
     @FXML
     private TableView tableView;
-    @FXML
-    private TableView tableView1;
-    @FXML
-    private TableView tableView11;
     @FXML
     private ScrollPane foScrollPane;
     @FXML
@@ -94,71 +61,115 @@ public class Controller<fileName> implements Initializable {
     @FXML
     private ChoiceBox solutionNOChoiceBox;
     @FXML
-    private ChoiceBox solutionNOChoiceBox1;
+    private TextField prefWorkdayMinMin;
     @FXML
-    private ChoiceBox solutionNOChoiceBox11;
+    private TextField prefWorkdayMinMax;
     @FXML
-    private TextField prefWorkdayMinMin11;
+    private TextField prefWorkdayMaxMin;
     @FXML
-    private TextField prefWorkdayMinMax11;
+    private TextField prefWorkdayMaxMax;
     @FXML
-    private TextField prefWorkdayMaxMin11;
+    private TextField knowledgeLevelMin;
     @FXML
-    private TextField prefWorkdayMaxMax11;
+    private TextField knowledgeLevelMax;
     @FXML
-    private TextField knowledgeLevelMin11;
+    private TextField paymentDemandMin;
     @FXML
-    private TextField knowledgeLevelMax11;
+    private TextField paymentDemandMax;
     @FXML
-    private TextField prefWorkersMinMin11;
+    private TextField prefWorkersMinMin;
     @FXML
-    private TextField prefWorkersMinMax11;
+    private TextField prefWorkersMinMax;
     @FXML
-    private TextField prefWorkersMaxMin11;
+    private TextField prefWorkersMaxMin;
     @FXML
-    private TextField prefWorkersMaxMax11;
+    private TextField prefWorkersMaxMax;
     @FXML
-    private TextField expectedKnowledgeMin11;
+    private TextField expectedKnowledgeMin;
     @FXML
-    private TextField expectedKnowledgeMax11;
+    private TextField expectedKnowledgeMax;
     @FXML
-    private TextField workersNOText11;
+    private TextField workersNOText;
     @FXML
-    private TextField shopsNOText11;
+    private TextField shopsNOText;
     @FXML
-    private TextField workdaysNOText11;
+    private TextField workdaysNOText;
     @FXML
-    private Label fillWarnLabel11;
+    private Label fillWarnLabel;
     @FXML
-    private Button againButton11;
+    private Button againButton;
     @FXML
-    private Pane textFieldPane11;
+    private Pane textFieldPane;
     @FXML
-    private Label searchLabel11;
+    private Label choosenMethodLabel;
+    @FXML
+    private Pane readFilePane;
+    @FXML
+    private ToggleGroup optimalizationOption;
+    @FXML
+    private Label cantReachFileLabel;
 
-
+    boolean changedMethod = false;
+    String actualMethodId = "1";
     String fileName;
-    CalcSchedule scheduleRandom;
+    CalcSchedule schedule;
+    Alert a = new Alert(Alert.AlertType.NONE);
+    ObservableList<Shops2> studentsModels;
+    int method =0;  //0 tudásMax, 1 costMin
+
+    @FXML
+    private void informAlert() {
+        a.setAlertType(Alert.AlertType.INFORMATION);
+        a.setContentText("You can reach the developer via email:\n marton.isti.steve@gmail.com");
+        a.show();
+    }
+
+    private void errorAlert(String text, boolean b) {
+        a.setAlertType(Alert.AlertType.ERROR);
+        a.setContentText(text);
+        if (b) {
+            a.setWidth(300);
+        }
+        a.setResizable(true);
+        a.show();
+    }
+
+    ;
 
     public Controller() throws IOException {
     }
 
     private void startProcess(TableView tableView, Pane solutionPan, ChoiceBox solutionNOChoiceBo, CalcSchedule schedule) {
-        tableView.setVisible(true);
         tableView.getColumns().clear();
         solutionPan.setVisible(true);
         solutionPan.setDisable(false);
-        if (solutionNOChoiceBo.getItems().isEmpty()) {
-            solutionNOChoiceBo.setValue(0);
-            int exit = 0;
-            for (int i = 0; i < schedule.solutionMap.get(schedule.finalCost).size(); i++) {
-                solutionNOChoiceBo.getItems().add(i + 1);
-                if (exit > 20) {
-                    break;
+
+        if (solutionNOChoiceBo.getItems().isEmpty()|| changedMethod) {
+            solutionNOChoiceBo.getItems().clear();
+            if(actualMethodId.equals("1")) {
+                solutionNOChoiceBo.setValue(0);
+                int exit = 0;
+                for (int i = 0; i < schedule.solutionMap.get(schedule.finalCost).size(); i++) {
+                    solutionNOChoiceBo.getItems().add(i + 1);
+                    if (exit > 20) {
+                        break;
+                    }
+                    exit++;
                 }
-                exit++;
+            }else{
+                solutionNOChoiceBo.setValue(0);
+                int exit2 = 0;
+                for (int i = 0; i < schedule.solutionMap2.get(schedule.finalPayment).size(); i++) {
+                    solutionNOChoiceBo.getItems().add(i + 1);
+                    if (exit2 > 20) {
+                        break;
+                    }
+                    exit2++;
+                }
             }
         }
+
+        changedMethod = false;
     }
 
     private int solutionNumberStart(ChoiceBox solutionBox) {
@@ -174,7 +185,7 @@ public class Controller<fileName> implements Initializable {
     private ObservableList<Shops2> fillStudentsModels(CalcSchedule schedule, int solutionNumber) throws MyException {
         ObservableList<Shops2> studentsModels2 = FXCollections.observableArrayList();
         for (int i = 0; i < schedule.days.size(); i++) {
-            studentsModels2.add(new Shops2(schedule.days.get(i), schedule, 0, i, solutionNumber));
+            studentsModels2.add(new Shops2(schedule.days.get(i), schedule, 0, i, solutionNumber, actualMethodId));
         }
         return studentsModels2;
     }
@@ -183,6 +194,7 @@ public class Controller<fileName> implements Initializable {
         ArrayList<TableColumn<Shops2, String>> columns = new ArrayList<>();
         TableColumn<Shops2, String> column2 = new TableColumn<>("Days");
         column2.setCellValueFactory(new PropertyValueFactory<Shops2, String>("days"));
+        column2.setStyle("-fx-font-size:15px;");
         columns.add(column2);
         for (int j = 0; j < schedule.shops.size(); j++) {
             String shopName = schedule.shops.get(j);
@@ -190,33 +202,151 @@ public class Controller<fileName> implements Initializable {
             int finalJ = j;
             column.setCellValueFactory(cellData ->
                     new ReadOnlyStringWrapper((String) cellData.getValue().getNamesList().get(finalJ).toString().subSequence(1, cellData.getValue().getNamesList().get(finalJ).toString().length() - 1)));
+            column.setStyle("-fx-font-size:15px;");
             columns.add(column);
         }
         return columns;
     }
 
-    private void closeProcess(Pane employeeNOPane, Label employeesLabel, Label shopsLabel, Label workdaysLabel, CalcSchedule schedule){
-        employeeNOPane.setVisible(true);
+    private void finishProcess(Pane employeeNOPane, Label employeesLabel, Label shopsLabel, Label workdaysLabel, CalcSchedule schedule) {
+
         employeesLabel.setText(String.valueOf("Number of employees: " + schedule.people.size()));
         shopsLabel.setText(String.valueOf("Number of shops: " + schedule.shops.size()));
         workdaysLabel.setText(String.valueOf("Number of workdays: " + schedule.days.size()));
+
+        solutionNOPane.setVisible(true);
+        if(actualMethodId.equals("1")){
+            readFileLabel.setText(("Runtime in sec: "+schedule.runTimeSec+"\nAll solutions number: "+schedule.solutionMap.size()+"\nNO of solutions (Knowledge level:solutionNO):\n " + schedule.solutionMap.keys()));
+        }else{
+            readFileLabel.setText(("NO of solutions (Cost:solutionNO):\n " + schedule.solutionMap2.keys()));
+        }
+        readFileLabel.setVisible(true);
+    }
+
+    private void clearOpenFilePane() {
+        readFilePane.setVisible(false);
+        readFileLabel.setText("");
+        readFileLabel.setId("");
+    }
+
+    private void changeMethod() {
+
+        solutionNOPane.setVisible(false);
+        tableView.getColumns().clear();
+        schedule = null;
+        solutionNOChoiceBox.setValue(0);
+        fillWarnLabel.setVisible(false);
+        solutionNOChoiceBox.getItems().clear();
+        againButton.setVisible(false);
+        startButton.setVisible(false);
     }
 
     @FXML
-    private void handleTestButton(ActionEvent event) throws IOException, MyException, noSolutionException {//Ide kellhet trycatch
-
-        Beosztas beosztas = new Beosztas(1);
-        CalcSchedule schedule = new CalcSchedule(1, beosztas);
-        startProcess(tableView1, solutionNOPane1, solutionNOChoiceBox1, schedule);
-
-        int solutionNumber = solutionNumberStart(solutionNOChoiceBox1);
-        ObservableList<Shops2> studentsModels = fillStudentsModels(schedule, solutionNumber);
-        ArrayList<TableColumn<Shops2, String>> columns = fillColumns(schedule);
-
-        for (int i = 0; i < columns.size(); i++) {
-            tableView1.getColumns().addAll(columns.get(i));
+    private void handleChangeMethod(ActionEvent event){
+        changedMethod = true;
+        RadioButton selectedRadioButton = (RadioButton) optimalizationOption.getSelectedToggle();
+        actualMethodId = selectedRadioButton.getId();
+        if(!startButton.isVisible()) {
+            solutionNOChoiceBox.getItems().clear();
+            handleRandomButton(event);
         }
-        tableView1.setItems(studentsModels);
+
+    }
+
+    @FXML
+    private void handleCalculationMethodMenu1(ActionEvent event) throws MyException, IOException {
+        changeMethod();
+        choosenMethodLabel.setText("1) Calculate from File");
+        choosenMethodLabel.setId("1");
+        readFilePane.setVisible(true);
+        textFieldPane.setVisible(false);
+        handleOpenFileButton(event);
+        handleRandomButton(event);
+    }
+
+    @FXML
+    private void handleCalculationMethodMenu2(ActionEvent event) throws MyException, IOException {
+        choosenMethodLabel.setText("2) Use Built in Data");
+        choosenMethodLabel.setId("2");
+        textFieldPane.setVisible(false);
+        clearOpenFilePane();
+        changeMethod();
+        handleRandomButton(event);
+    }
+
+    @FXML
+    private void handleCalculationMethodMenu3(ActionEvent event) {
+        choosenMethodLabel.setText("3) Use RandomData");
+        choosenMethodLabel.setId("3");
+        textFieldPane.setVisible(true);
+        clearOpenFilePane();
+        changeMethod();
+        startButton.setVisible(true);
+    }
+
+    private void catchError() {
+        startButton.setVisible(false);
+        againButton.setVisible(true);
+        solutionNOPane.setVisible(false);
+        errorAlert(readFileLabel.getText(), false);
+    }
+
+    private void changeButtonStyle(String buttonStyle) {
+        openFileButton.setStyle(buttonStyle);
+        againButton.setStyle(buttonStyle);
+        startButton.setStyle(buttonStyle);
+    }
+
+    @FXML
+    private void changeStyleBright(ActionEvent event) {
+
+        foScrollPane.setStyle("-fx-background-color: #d18e1f");
+        changeButtonStyle(" -fx-font-family: \"Comic Sans MS\";\n" +
+                "    -fx-font-weight: bold;\n" +
+                "   -fx-background-color: #CCFF99;\n" +
+                "    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );");
+    }
+
+    @FXML
+    private void changeStyleGrey(ActionEvent event) {
+
+        foScrollPane.setStyle("-fx-background: #2f4f4f;");
+        changeButtonStyle("  -fx-font-weight: bold;\n" +
+                "    -fx-background-color: linear-gradient(#61a2b1, #2A5058);\n" +
+                "    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );");
+    }
+
+    @FXML
+    private void handleTestButton(ActionEvent event) {
+
+        try {
+            Beosztas beosztas = new Beosztas(1);
+            schedule = new CalcSchedule(1, beosztas);
+            startProcess(tableView, solutionNOPane, solutionNOChoiceBox, schedule);
+
+            int solutionNumber = solutionNumberStart(solutionNOChoiceBox);
+            studentsModels = fillStudentsModels(schedule, solutionNumber);
+            ArrayList<TableColumn<Shops2, String>> columns = fillColumns(schedule);
+
+            for (int i = 0; i < columns.size(); i++) {
+                tableView.getColumns().addAll(columns.get(i));
+            }
+            tableView.setItems(studentsModels);
+            finishProcess(employeeNOPanel, employeesNOLabel, shopsNOLabel, workdaysNOLabel, schedule);
+        } catch (MyException e) {
+            readFileLabel.setText(e.str1);
+            catchError();
+        } catch (noSolutionException nse) {
+            readFileLabel.setText(nse.str1);
+            catchError();
+        } catch (OutOfMemoryError ooe) {
+            readFileLabel.setText("Too many solutions has the same expediency\n" +
+                    "Please narrow the possibilities");
+            catchError();
+
+        } catch (Exception ex) {
+           catchOther(ex);
+        }
     }
 
     @FXML
@@ -228,6 +358,9 @@ public class Controller<fileName> implements Initializable {
                 readFileLabel.setText("File selected: " + selectedFile.getName());
                 readFileLabel.setId(selectedFile.getPath());
                 fileName = selectedFile.getPath();
+                solutionNOChoiceBox.setValue(0);
+                solutionNOChoiceBox.getItems().clear();
+                handleRandomButton(event);
             }
         } catch (Exception e) {
             readFileLabel.setText("please choose a file!");
@@ -236,177 +369,205 @@ public class Controller<fileName> implements Initializable {
 
 
     @FXML
-    private void handleStartButton(ActionEvent event) throws IOException {
+    private void handleStartButton(ActionEvent event)  {
         if (fileName != null) {
             readWarnLabel.setVisible(false);
             try {
                 Beosztas beosztas = new Beosztas(3, readFileLabel.getId());
-                CalcSchedule schedule = new CalcSchedule(3, beosztas);
+                schedule = new CalcSchedule(3, beosztas);
                 startProcess(tableView, solutionNOPane, solutionNOChoiceBox, schedule);
 
                 int solutionNumber = solutionNumberStart(solutionNOChoiceBox);
-                ObservableList<Shops2> studentsModels = fillStudentsModels(schedule,solutionNumber);
+                studentsModels = fillStudentsModels(schedule, solutionNumber);
                 ArrayList<TableColumn<Shops2, String>> columns = fillColumns(schedule);
 
                 for (int i = 0; i < columns.size(); i++) {
                     tableView.getColumns().addAll(columns.get(i));
                 }
                 tableView.setItems(studentsModels);
-                closeProcess(employeeNOPanel,employeesNOLabel,shopsNOLabel,workdaysNOLabel,schedule);
+                finishProcess(employeeNOPanel, employeesNOLabel, shopsNOLabel, workdaysNOLabel, schedule);
             } catch (MyException e) {
                 readFileLabel.setText(e.str1);
+                catchError();
             } catch (noSolutionException nse) {
                 readFileLabel.setText(nse.str1);
+                catchError();
+            } catch (OutOfMemoryError ooe) {
+                readFileLabel.setText("Too many solutions has the same expediency\n" +
+                        "Please narrow the possibilities");
+                catchError();
+            } catch (Exception ex) {
+               catchOther(ex);
             }
-
         } else {
-            readWarnLabel.setVisible(true);
+            readFileLabel.setText("please choose a *.csv file!");
         }
+    }
+
+    private boolean textsNotFilled() {
+        boolean filled = (workersNOText.getLength() == 0 || prefWorkdayMinMin.getLength() == 0 ||
+                prefWorkdayMinMax.getLength() == 0 || knowledgeLevelMin.getLength() == 0 ||
+                prefWorkdayMaxMin.getLength() == 0 || prefWorkdayMaxMax.getLength() == 0 ||
+                knowledgeLevelMin.getLength() == 0 || knowledgeLevelMax.getLength() == 0 ||
+                paymentDemandMin.getLength() ==0   || paymentDemandMax.getLength() ==0   ||
+                prefWorkersMinMin.getLength() == 0 || prefWorkersMinMax.getLength() == 0 ||
+                prefWorkersMaxMin.getLength() == 0 || prefWorkersMaxMax.getLength() == 0 ||
+                expectedKnowledgeMin.getLength() == 0 || expectedKnowledgeMax.getLength() == 0 ||
+                shopsNOText.getLength() == 0 || workdaysNOText.getLength() == 0);
+
+        return filled;
+    }
+
+    private boolean textsMinBiggerMax(){
+        boolean filled = ( Integer.parseInt( prefWorkdayMinMin.getText()) > Integer.parseInt( prefWorkdayMinMax.getText()) ||
+                Integer.parseInt(prefWorkdayMaxMin.getText()) >  Integer.parseInt( prefWorkdayMaxMax.getText()) ||
+                Integer.parseInt(knowledgeLevelMin.getText()) >  Integer.parseInt( knowledgeLevelMax.getText()) ||
+                Integer.parseInt(paymentDemandMin.getText()) >   Integer.parseInt( paymentDemandMax.getText())  ||
+                Integer.parseInt(prefWorkersMinMin.getText()) >  Integer.parseInt(prefWorkersMinMax.getText())  ||
+                Integer.parseInt(prefWorkersMaxMin.getText()) >  Integer.parseInt(prefWorkersMaxMax.getText())  ||
+                Integer.parseInt(expectedKnowledgeMin.getText()) >  Integer.parseInt(expectedKnowledgeMax.getText()));
+
+        return filled;
+    }
+
+    @FXML
+    private void handleClose(ActionEvent event) {
+        Platform.exit();
+    }
+
+    private void catchOther(Exception ex) {
+        readFileLabel.setText("egyeb hiba");
+        startButton.setVisible(false);
+
+        solutionNOPane.setVisible(false);
+        ex.printStackTrace();
+        String hiba = "egyeb hiba\n";
+        StringWriter stackTraceWriter = new StringWriter();
+        ex.printStackTrace(new PrintWriter(stackTraceWriter));
+        String hiba3 = stackTraceWriter.toString();
+        String hiba2 = hiba3.substring(0, 200);
+        hiba = hiba.concat(hiba2);
+        errorAlert(hiba, true);
     }
 
     @FXML
     private void handleRandomButton(ActionEvent event) {
-        if (workersNOText11.getLength() == 0 || prefWorkdayMinMin11.getLength() == 0 ||
-                prefWorkdayMinMax11.getLength() == 0 || knowledgeLevelMin11.getLength() == 0 ||
-                prefWorkdayMaxMin11.getLength() == 0 || prefWorkdayMaxMax11.getLength() == 0 ||
-                knowledgeLevelMin11.getLength() == 0 || knowledgeLevelMax11.getLength() == 0 ||
-                prefWorkersMinMin11.getLength() == 0 || prefWorkersMinMax11.getLength() == 0 ||
-                prefWorkersMaxMin11.getLength() == 0 || prefWorkdayMaxMax11.getLength() == 0 ||
-                expectedKnowledgeMin11.getLength() == 0 || expectedKnowledgeMax11.getLength() == 0 ||
-                shopsNOText11.getLength() == 0 || workdaysNOText11.getLength() == 0) {
-            fillWarnLabel11.setVisible(true);
-        } else {
-            System.out.println("*****elkezdtem a randomot********************");
+        if (choosenMethodLabel.getId().equals("3")) {
+            if (textsNotFilled()) {
+                fillWarnLabel.setText("Please fill all fields!");
+                fillWarnLabel.setVisible(true);
+            } else if(textsMinBiggerMax()) {
+                fillWarnLabel.setText("Maximum can't be lower than Minimum");
+                fillWarnLabel.setVisible(true);
+            }else {
 
-            fillWarnLabel11.setVisible((false));
-            tableView11.getColumns().clear();
-            textFieldPane11.setVisible(false);
-            readFileLabel11.setText("reading...");
-            foAnchorPane.requestFocus();
+                try {
+                    fillWarnLabel.setVisible((false));
+                    textFieldPane.setVisible(false);
+                    if (schedule == null || !againButton.isVisible() ) {
+                        Beosztas beosztas = new Beosztas(2, Integer.parseInt(shopsNOText.getText()), Integer.parseInt(workersNOText.getText()), Integer.parseInt(workdaysNOText.getText()),
+                                Integer.parseInt(prefWorkdayMinMin.getText()), Integer.parseInt(prefWorkdayMinMax.getText()), Integer.parseInt(prefWorkdayMaxMin.getText()),
+                                Integer.parseInt(prefWorkdayMaxMax.getText()), Integer.parseInt(knowledgeLevelMin.getText()),Integer.parseInt(knowledgeLevelMax.getText()),
+                                Integer.parseInt(paymentDemandMin.getText()), Integer.parseInt(paymentDemandMax.getText()),
+                                Integer.parseInt(prefWorkersMinMin.getText()), Integer.parseInt(prefWorkersMinMax.getText()), Integer.parseInt(prefWorkersMaxMin.getText()),
+                                Integer.parseInt(prefWorkersMaxMax.getText()), Integer.parseInt(expectedKnowledgeMin.getText()), Integer.parseInt(expectedKnowledgeMax.getText())); //Ide kell 2es mód
 
-
-            //   Beosztas beosztas = new Beosztas();
-
-            try {
-                if (scheduleRandom == null || !againButton11.isVisible()) {
-                    searchLabel11.setVisible(true);
-                    Beosztas beosztas = new Beosztas(2, Integer.parseInt(shopsNOText11.getText()), Integer.parseInt(workersNOText11.getText()), Integer.parseInt(workdaysNOText11.getText()),
-                            Integer.parseInt(prefWorkdayMinMin11.getText()), Integer.parseInt(prefWorkdayMinMax11.getText()), Integer.parseInt(prefWorkdayMaxMin11.getText()),
-                            Integer.parseInt(prefWorkdayMaxMax11.getText()), Integer.parseInt(knowledgeLevelMin11.getText()), Integer.parseInt(knowledgeLevelMax11.getText()),
-                            Integer.parseInt(prefWorkersMinMin11.getText()), Integer.parseInt(prefWorkersMinMax11.getText()), Integer.parseInt(prefWorkersMaxMin11.getText()),
-                            Integer.parseInt(prefWorkersMaxMax11.getText()), Integer.parseInt(expectedKnowledgeMin11.getText()), Integer.parseInt(expectedKnowledgeMax11.getText())); //Ide kell 2es mód
-
-                    startButton11.setVisible(false);
-                    scheduleRandom = new CalcSchedule(2, beosztas);
-                }
-
-                System.out.println("itt---------------------------");
-                if (scheduleRandom.errorMessage != null) {
-                    readWarnLabel11.setText(scheduleRandom.errorMessage);
-                    readWarnLabel11.setVisible(true);
-
-                } else {
-                    if (solutionNOChoiceBox11.getItems().isEmpty()) {
-                        solutionNOChoiceBox11.setValue(0);
-                        int exit = 0;
-                        for (int i = 0; i < scheduleRandom.solutionMap.get(scheduleRandom.finalCost).size(); i++) {
-                            solutionNOChoiceBox11.getItems().add(i + 1);
-                            if (exit > 20) {
-                                break;
-                            }
-                            exit++;
-                        }
+                        startButton.setVisible(false);
+                        schedule = new CalcSchedule(2, beosztas);
                     }
-                    solutionNOPane11.setVisible(true);
-                    int solutionNumber = (Integer) (solutionNOChoiceBox11.getValue());
-                    if (solutionNumber == 0) {
-                        solutionNumber = 0;
-                    } else {
-                        solutionNumber -= 1;
-                    }
+                    fillWarnLabel.setVisible((false));
+                    textFieldPane.setVisible(false);
+                    readFileLabel.setText("reading...");
 
+                    startProcess(tableView, solutionNOPane, solutionNOChoiceBox, schedule);
 
-                    ArrayList<TableColumn<Shops2, String>> columns = new ArrayList<>();
-                    ObservableList<Shops2> studentsModels = FXCollections.observableArrayList();
-                    for (int i = 0; i < scheduleRandom.days.size(); i++) { //Itt a napok számán kell végigmenni
-
-                        studentsModels.add(new Shops2(scheduleRandom.days.get(i), scheduleRandom, 0, i, solutionNumber));
-                    }
-                    TableColumn<Shops2, String> column2 = new TableColumn<>("Days");
-                    column2.setCellValueFactory(new PropertyValueFactory<Shops2, String>("days"));
-                    // column.setCellValueFactory((Callback<TableColumn.CellDataFeatures<Shops2, String>, ObservableValue<String>>) studentsModels.get(0).getNames0());//itt a probléma abban, hogy ugyanazt töltöm be, dinamikusan kellene megkapni azt a names arrayt amelyik ezt a napot tartalmazza
-                    columns.add(column2);
-                    for (int j = 0; j < scheduleRandom.shops.size(); j++) {
-                        String shopName = scheduleRandom.shops.get(j);
-                        TableColumn<Shops2, String> column = new TableColumn<>("Shop " + shopName);
-                        int finalJ = j;
-                        column.setCellValueFactory(cellData ->
-                                new ReadOnlyStringWrapper((String) cellData.getValue().getNamesList().get(finalJ).toString().subSequence(1, cellData.getValue().getNamesList().get(finalJ).toString().length() - 1)));
-                        columns.add(column);
-                    }
-
+                    int solutionNumber = solutionNumberStart(solutionNOChoiceBox);
+                    studentsModels = fillStudentsModels(schedule, solutionNumber);
+                    ArrayList<TableColumn<Shops2, String>> columns = fillColumns(schedule);
 
                     for (int i = 0; i < columns.size(); i++) {
-                        tableView11.getColumns().addAll(columns.get(i));
+                        tableView.getColumns().addAll(columns.get(i));
                     }
+                    tableView.setItems(studentsModels);
+                    finishProcess(employeeNOPanel, employeesNOLabel, shopsNOLabel, workdaysNOLabel, schedule);
+                    againButton.setVisible(true);
+                } catch (MyException e) {
 
-                    tableView11.setItems(studentsModels);
+                    readFileLabel.setText(e.str1);
+                    againButton.setVisible(true);
+                    catchError();
 
-                    employeeNOPanel11.setVisible(true);
-                    employeesNOLabel11.setText(String.valueOf("Number of employees: " + scheduleRandom.people.size()));
-                    shopsNOLabel11.setText(String.valueOf("Number of shops: " + scheduleRandom.shops.size()));
-                    workdaysNOLabel11.setText(String.valueOf("Number of workdays: " + scheduleRandom.days.size()));
+                } catch (NumberFormatException e) {
+
+                    readFileLabel.setText("Please only use numbers!");
+                    againButton.setVisible(true);
+                    catchError();
+
+                } catch (noSolutionException nse) {
+                    readFileLabel.setText(nse.str1);
+                    againButton.setVisible(true);
+                    catchError();
+                } catch (OutOfMemoryError ooe) {
+                    readFileLabel.setText("Too many solutions has the same expediency\n" +
+                            "Please narrow the possibilities");
+                    againButton.setVisible(true);
+                    catchError();
+                } catch (Exception ex) {
+                    againButton.setVisible(true);
+                    catchOther(ex);
                 }
 
-                tableView11.setVisible(true);
-                againButton11.setVisible(true);
-                searchLabel11.setVisible(false);
-
-                readFileLabel11.setText(("NO of solutions with expediencies: " + scheduleRandom.solutionMap.keys()));
-
-            } catch (MyException e) {
-
-                readFileLabel11.setText(e.str1);
-                againButton11.setVisible(true);
-                startButton11.setVisible(false);
-                searchLabel11.setVisible(false);
-            } catch (noSolutionException nse) {
-                readFileLabel11.setText(nse.str1);
-                startButton11.setVisible(false);
-                againButton11.setVisible(true);
-                searchLabel11.setVisible(false);
-            } catch (OutOfMemoryError ooe) {
-                readFileLabel11.setText("Too many solutions has the same expediency\n" +
-                        "Please narrow the possibilities");
-                startButton11.setVisible(false);
-                againButton11.setVisible(true);
-                searchLabel11.setVisible(false);
-            } catch (Exception ex) {
-                readFileLabel11.setText("egyeb hiba");
-                startButton11.setVisible(false);
-                againButton11.setVisible(true);
-                searchLabel11.setVisible(false);
-                ex.printStackTrace();
-                //  betenni egy felugró ablakba a stacktracet
             }
 
+        } else if (choosenMethodLabel.getId().equals("2")) {
+            handleTestButton(event);
+        } else if (choosenMethodLabel.getId().equals("1")) {
+            handleStartButton(event);
+        } else {
+            fillWarnLabel.setText("please choose a method");
+            fillWarnLabel.setVisible(true);
         }
-
     }
 
     @FXML
     private void handleAgainButton(ActionEvent event) {
-        textFieldPane11.setVisible(true);
-        tableView11.setVisible(false);
-        againButton11.setVisible(false);
-        startButton11.setVisible(true);
+        solutionNOChoiceBox.setValue(0);
+        solutionNOChoiceBox.getItems().clear(); //Ezt valamiért időnként nem futtatja le, minden második alkalommal fut csak le
+
+        textFieldPane.setVisible(true);
+        solutionNOPane.setVisible(false);
+        againButton.setVisible(false);
+        startButton.setVisible(true);
+    }
+
+    @FXML
+    private void handleSaveButton(ActionEvent event) {
+        cantReachFileLabel.setVisible(false);
+        System.out.println("Save");
+        List<String> solution = new ArrayList<>();
+        solution.add( tableView.getItems().get(0).toString());
+
+        try {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle("Save solution");
+            fileChooser.setInitialFileName("schedule.csv");
+            //FileChooserType type = new FileType(".csv");
+            fileChooser.setInitialDirectory(new File("/"));
+    //        fileChooser.setSelectedExtensionFilter(csv);
+            File selectedFile = fileChooser.showSaveDialog(null);
+            new Kiir(selectedFile, solution, studentsModels, schedule.shops);
+        } catch (FileNotFoundException fnfe) {
+           cantReachFileLabel.setVisible(true);
+            fnfe.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         //TODO
     }
-
 
 
 }
