@@ -1,0 +1,35 @@
+
+.root {
+      -fx-font-family: "Comic Sans MS";
+}
+
+.scroll-pane > .viewport {
+   -fx-background-color: transparent;
+}
+
+.scroll-pane {
+          -fx-background: rgb(1,240, 2);
+          -fx-background-repeat: stretch;
+          -fx-background-size: 900 506;
+          -fx-background-position: center center;
+}
+
+.anchor-pane{
+
+}
+
+.label {
+    -fx-font-size: 12px;
+    -fx-font-family: "Comic Sans MS";
+    -fx-font-weight: bold;
+    -fx-text-fill: #991B28;
+    -fx-effect: dropshadow( gaussian , rgba(255,255,255,0.5) , 0,0,0,1 );
+}
+
+.button {
+   /* -fx-text-fill: white;*/
+   -fx-font-family: "Comic Sans MS";
+    -fx-font-weight: bold;
+   -fx-background-color: #CCFF99;
+    -fx-effect: dropshadow( three-pass-box , rgba(0,0,0,0.6) , 5, 0.0 , 0 , 1 );
+}

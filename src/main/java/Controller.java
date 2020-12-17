@@ -557,8 +557,11 @@ public class Controller<fileName> implements Initializable {
             File selectedFile = fileChooser.showSaveDialog(null);
             new Kiir(selectedFile, solution, studentsModels, schedule.shops);
         } catch (FileNotFoundException fnfe) {
-           cantReachFileLabel.setVisible(true);
+            cantReachFileLabel.setVisible(true);
             fnfe.printStackTrace();
+        } catch (NullPointerException npe) {
+            npe.printStackTrace();
+            System.out.println("---Choose a File to save in!--");
         } catch (Exception e) {
             e.printStackTrace();
         }
